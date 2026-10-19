@@ -1,0 +1,23 @@
+name: Recopier les installateurs
+on:
+  push:
+    paths: ['.github/workflows/recopier.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  recopier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prendre les installateurs de la version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.1.8 --repo MBOMBOmamu1993/rapporteur-windows -p Rapporteur-Setup.exe -p Rapporteur.dmg -D sortie
+          ls -la sortie
+      - name: Les publier ici
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload v1.1.8 sortie/Rapporteur-Setup.exe sortie/Rapporteur.dmg --repo ${{ github.repository }} --clobber
+          gh release edit v1.1.8 --repo ${{ github.repository }} --draft=false --latest
